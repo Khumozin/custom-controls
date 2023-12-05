@@ -1,0 +1,23 @@
+<ng-container [formGroup]="form">
+    <mat-select class="select"
+                formControlName="scope">
+
+        @if (selectItems.length === 0) {
+            <mat-option value="">No Items</mat-option>
+        } @else {
+            @for (item of selectItems; track $index) {
+            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+            }
+        }
+
+    </mat-select>
+    <mat-divider [vertical]="true"
+                 class="divider"></mat-divider>
+    <input matInput
+           formControlName="query"
+           [ngStyle]="{ opacity: disabled ? .5 : 1 }"
+           [placeholder]="placeholder"
+           type="text"
+           name="advance-search"
+           class="input" />
+</ng-container>
