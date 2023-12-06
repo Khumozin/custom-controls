@@ -2,10 +2,17 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'search-control',
+    loadComponent: () =>
+      import('./features/advanced-search-control').then(
+        (c) => c.AdvancedSearchControlComponent,
+      ),
+  },
+  {
     path: '',
     loadComponent: () =>
-      import(
-        './features/advanced-search-control/advanced-search-control.component'
-      ).then((c) => c.AdvancedSearchControlComponent),
+      import('./features/advanced-select-control').then(
+        (c) => c.AdvancedSelectControlComponent,
+      ),
   },
 ];
