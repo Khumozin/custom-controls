@@ -1,12 +1,15 @@
 <div class="w-full h-screen flex items-center justify-center">
     <app-select label="Pick the User"
+                multiple="true"
+                [searchable]="true"
+                [disabled]="true"
                 [value]="selectedValue"
-                (selectionChanged)="onSelectionChanged($event)">
-        <app-option value="khumo">Khumo</app-option>
-        <app-option value="richard">Richard</app-option>
-        <app-option value="koketso">Koketso</app-option>
-        <app-option [disabled]="true"
-                    disabledReason="Too smart"
-                    value="violet">Violet</app-option>
+                [displayWith]="displayWithFN"
+                [compareWith]="compareWithFN"
+                (closed)="onSearchChanged('')"
+                (selectionChanged)="onSelectionChanged($event)"
+                (searchChanged)="onSearchChanged($event)">
+        <app-option *ngFor="let user of filteredUsers"
+                    [value]="user">{{ user.name }}</app-option>
     </app-select>
 </div>

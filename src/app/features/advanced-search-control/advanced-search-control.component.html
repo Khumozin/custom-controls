@@ -1,22 +1,23 @@
-<div class="w-full h-screen flex flex-col">
+<div class="w-full h-screen flex justify-center items-center">
     <div class="w-1/2">
-        <h3>Outline</h3>
-        <select-form-field-container [required]="true"
-                                     [selectItems]="items"></select-form-field-container>
-    </div>
+        <div class="w-full">
+            <h3>Outline</h3>
+            <select-form-field-container [required]="true"
+                                         [selectItems]="items" />
+        </div>
 
+        <div class="w-full">
+            <h3>Fill</h3>
+            <select-form-field-container appearance="fill"
+                                         [disabled]="true"
+                                         [selectItems]="items" />
+        </div>
 
-    <div class="w-1/2">
-        <h3>Fill</h3>
-        <select-form-field-container appearance="fill"
-                                     [disabled]="true"
-                                     [selectItems]="items"></select-form-field-container>
-    </div>
-
-    <div class="w-1/2">
-        <h3>None</h3>
-        <select-form-field-container [required]="true"
-                                     [disabled]="false"
-                                     [selectItems]="items"></select-form-field-container>
+        <div class="w-full">
+            <h3>None</h3>
+            <select-form-field-container [required]="true"
+                                         [disabled]="false"
+                                         [selectItems]="items" />
+        </div>
     </div>
 </div>

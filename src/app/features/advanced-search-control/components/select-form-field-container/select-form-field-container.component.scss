@@ -2,7 +2,8 @@
     display: block;
 }
 .search-form-field {
-    width: 35rem;
+    // width: 35rem;
+    width: 100%;
 }
 /* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
 .mat-select-arrow__outline {
