@@ -1,7 +1,9 @@
+import { Highlightable } from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   HostBinding,
   HostListener,
@@ -17,7 +19,7 @@ import {
   styleUrl: './option.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OptionComponent<T> {
+export class OptionComponent<T> implements Highlightable {
   @Input()
   value: T | null = null;
 
@@ -42,7 +44,23 @@ export class OptionComponent<T> {
   @HostBinding('class.selected')
   protected isSelected = false;
 
-  constructor(private cd: ChangeDetectorRef) {}
+  @HostBinding('class.active')
+  protected isActive = false;
+
+  constructor(
+    private cd: ChangeDetectorRef,
+    private elRef: ElementRef<HTMLElement>,
+  ) {}
+
+  setActiveStyles(): void {
+    this.isActive = true;
+    this.cd.markForCheck();
+  }
+
+  setInactiveStyles(): void {
+    this.isActive = false;
+    this.cd.markForCheck();
+  }
 
   highlightAsSelected() {
     this.isSelected = true;
@@ -52,5 +70,9 @@ export class OptionComponent<T> {
   deselect() {
     this.isSelected = false;
     this.cd.markForCheck();
+  }
+
+  scrollIntoView(options: ScrollIntoViewOptions) {
+    this.elRef.nativeElement.scrollIntoView(options);
   }
 }
