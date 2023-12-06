@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldAppearance, MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 
 import { CustomFormFieldControlComponent } from '../custom-form-field-control/custom-form-field-control.component';
 
@@ -15,6 +16,7 @@ type FormControlType = {
   imports: [
     MatFormFieldModule,
     ReactiveFormsModule,
+    MatIconModule,
     CustomFormFieldControlComponent,
   ],
   templateUrl: './select-form-field-container.component.html',

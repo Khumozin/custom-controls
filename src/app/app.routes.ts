@@ -4,15 +4,11 @@ export const routes: Routes = [
   {
     path: 'search-control',
     loadComponent: () =>
-      import('./features/advanced-search-control').then(
-        (c) => c.AdvancedSearchControlComponent,
-      ),
+      import('./features').then((c) => c.AdvancedSearchControlComponent),
   },
   {
     path: '',
     loadComponent: () =>
-      import('./features/advanced-select-control').then(
-        (c) => c.AdvancedSelectControlComponent,
-      ),
+      import('./features').then((c) => c.AdvancedSelectControlComponent),
   },
 ];
