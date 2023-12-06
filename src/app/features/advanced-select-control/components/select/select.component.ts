@@ -1,4 +1,5 @@
 import { animate, AnimationEvent, state, style, transition, trigger } from '@angular/animations';
+import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { SelectionModel } from '@angular/cdk/collections';
 import { OverlayModule } from '@angular/cdk/overlay';
@@ -135,7 +136,26 @@ export class SelectComponent<T>
   close() {
     this.isOpen = false;
     this.onTouched();
+    this.hostRef.nativeElement.focus();
     this.cd.markForCheck();
+  }
+
+  @HostListener('keydown', ['$event'])
+  protected onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'ArrowDown' && !this.isOpen) {
+      this.open();
+
+      return;
+    }
+
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && this.isOpen) {
+      this.listKeyManager.onKeydown(e);
+      return;
+    }
+
+    if (e.key === 'Enter' && this.isOpen && this.listKeyManager.activeItem) {
+      this.handleSelection(this.listKeyManager.activeItem);
+    }
   }
 
   @ContentChildren(OptionComponent, { descendants: true })
@@ -164,9 +184,12 @@ export class SelectComponent<T>
 
   private unsubscribe$ = new Subject<void>();
 
+  private listKeyManager!: ActiveDescendantKeyManager<OptionComponent<T>>;
+
   constructor(
     @Attribute('multiple') private multiple: string,
     private cd: ChangeDetectorRef,
+    private hostRef: ElementRef,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -177,6 +200,19 @@ export class SelectComponent<T>
   }
 
   ngAfterContentInit(): void {
+    this.listKeyManager = new ActiveDescendantKeyManager(
+      this.options,
+    ).withWrap();
+
+    this.listKeyManager.change
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((itemIndex) => {
+        this.options.get(itemIndex)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      });
+
     this.selectionModel.changed
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((values) => {

@@ -53,6 +53,34 @@ export class AdvancedSelectControlComponent implements OnInit {
       name: 'Violet',
       nickname: 'MaV',
     },
+    {
+      country: 'South Africa',
+      disabled: false,
+      id: 5,
+      name: 'Omphile',
+      nickname: 'Phiphi',
+    },
+    {
+      country: 'South Africa',
+      disabled: false,
+      id: 6,
+      name: 'Galaletsang',
+      nickname: 'Amu',
+    },
+    {
+      country: 'South Africa',
+      disabled: false,
+      id: 7,
+      name: 'Remotshepile',
+      nickname: 'Mpuni',
+    },
+    {
+      country: 'South Africa',
+      disabled: true,
+      id: 8,
+      name: 'Keitumetse',
+      nickname: 'Bombo',
+    },
   ];
 
   filteredUsers = this.users;
