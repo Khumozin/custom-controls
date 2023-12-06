@@ -7,6 +7,7 @@ import {
   AfterContentInit,
   Attribute,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
@@ -21,6 +22,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { interval, merge, startWith, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 
 import { OptionComponent } from '../option/option.component';
@@ -43,10 +45,17 @@ export type SelectValue<T> = T | T[] | null;
       ]),
     ]),
   ],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: SelectComponent,
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectComponent<T>
-  implements OnChanges, AfterContentInit, OnDestroy
+  implements OnChanges, AfterContentInit, OnDestroy, ControlValueAccessor
 {
   @Input()
   label = '';
@@ -59,6 +68,10 @@ export class SelectComponent<T>
   disabled = false;
 
   @Input()
+  @HostBinding('attr.tabIndex')
+  tabIndex = 0;
+
+  @Input()
   displayWith: ((value: T) => string | null) | null = null;
 
   @Input()
@@ -66,15 +79,11 @@ export class SelectComponent<T>
 
   @Input()
   set value(value: SelectValue<T>) {
-    this.selectionModel.clear();
-    if (value) {
-      if (Array.isArray(value)) {
-        this.selectionModel.select(...value);
-      } else {
-        this.selectionModel.select(value);
-      }
-    }
+    this.setupValue(value);
+    this.onChange(this.value);
+    this.highlightSelectedOptions();
   }
+
   get value() {
     if (this.selectionModel.isEmpty()) {
       return null;
@@ -100,6 +109,14 @@ export class SelectComponent<T>
   @Output()
   readonly selectionChanged = new EventEmitter<SelectValue<T>>();
 
+  @HostListener('blur')
+  markAsTouched() {
+    if (!this.disabled && !this.isOpen) {
+      this.onTouched();
+      this.cd.markForCheck();
+    }
+  }
+
   @HostListener('click')
   open() {
     if (this.disabled) return;
@@ -111,10 +128,14 @@ export class SelectComponent<T>
         .pipe(take(1))
         .subscribe(() => this.searchInput.nativeElement.focus());
     }
+
+    this.cd.markForCheck();
   }
 
   close() {
     this.isOpen = false;
+    this.onTouched();
+    this.cd.markForCheck();
   }
 
   @ContentChildren(OptionComponent, { descendants: true })
@@ -135,11 +156,18 @@ export class SelectComponent<T>
     return this.value;
   }
 
+  protected onChange: (newValue: SelectValue<T>) => void = () => {};
+
+  protected onTouched: () => void = () => {};
+
   private optionMap = new Map<T | null, OptionComponent<T>>();
 
   private unsubscribe$ = new Subject<void>();
 
-  constructor(@Attribute('multiple') private multiple: string) {}
+  constructor(
+    @Attribute('multiple') private multiple: string,
+    private cd: ChangeDetectorRef,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['compareWith']) {
@@ -178,12 +206,35 @@ export class SelectComponent<T>
     this.unsubscribe$.complete();
   }
 
-  clearSelection(e: Event) {
-    e.stopPropagation();
+  writeValue(value: SelectValue<T>): void {
+    this.setupValue(value);
+    this.highlightSelectedOptions();
+    this.cd.markForCheck();
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState?(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+    this.cd.markForCheck();
+  }
+
+  clearSelection(e?: Event) {
+    e?.stopPropagation();
     if (this.disabled) return;
 
     this.selectionModel.clear();
     this.selectionChanged.emit(this.value);
+
+    this.onChange(this.value);
+
+    this.cd.markForCheck();
   }
 
   protected onPanelAnimationDone({ fromState, toState }: AnimationEvent) {
@@ -206,6 +257,7 @@ export class SelectComponent<T>
     if (option.value) {
       this.selectionModel.toggle(option.value);
       this.selectionChanged.emit(this.value);
+      this.onChange(this.value);
     }
 
     if (!this.selectionModel.isMultipleSelection()) {
@@ -236,5 +288,16 @@ export class SelectComponent<T>
     return (
       this.options && this.options.find((o) => this.compareWith(o.value, value))
     );
+  }
+
+  private setupValue(value: SelectValue<T>) {
+    this.selectionModel.clear();
+    if (value) {
+      if (Array.isArray(value)) {
+        this.selectionModel.select(...value);
+      } else {
+        this.selectionModel.select(value);
+      }
+    }
   }
 }

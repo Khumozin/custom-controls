@@ -1,25 +1,28 @@
 import { NgFor } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { User } from '../../core/models';
-import { OptionComponent, SelectComponent } from './components';
+import { OptionComponent, SelectComponent, SelectValue } from './components';
 
 @Component({
   selector: 'app-advanced-select-control',
   standalone: true,
-  imports: [SelectComponent, OptionComponent, NgFor],
+  imports: [SelectComponent, OptionComponent, NgFor, ReactiveFormsModule],
   templateUrl: './advanced-select-control.component.html',
   styleUrl: './advanced-select-control.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdvancedSelectControlComponent {
-  selectedValue = {
-    country: 'South Africa',
-    disabled: false,
-    id: 1,
-    name: 'Khumo',
-    nickname: 'Khumozin',
-  };
+export class AdvancedSelectControlComponent implements OnInit {
+  selectedValue = new FormControl<SelectValue<User>>([
+    {
+      country: 'South Africa',
+      disabled: false,
+      id: 1,
+      name: 'Khumo',
+      nickname: 'Khumozin',
+    },
+  ]);
 
   users: User[] = [
     {
@@ -54,8 +57,13 @@ export class AdvancedSelectControlComponent {
 
   filteredUsers = this.users;
 
-  constructor(private cd: ChangeDetectorRef) {
+  constructor(private cd: ChangeDetectorRef) {}
 
+  ngOnInit(): void {
+    // setTimeout(() => {
+    //   // this.selectedValue.disable();
+    // }, 4000);
+    this.selectedValue.valueChanges.subscribe(this.onSelectionChanged);
   }
 
   onSelectionChanged(value: unknown) {
