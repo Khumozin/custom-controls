@@ -1,13 +1,11 @@
 <div class="w-full h-screen flex items-center justify-center">
     <app-select label="Pick the User"
-                multiple="true"
+                multiple
                 [searchable]="true"
-                [disabled]="true"
-                [value]="selectedValue"
+                [formControl]="selectedValue"
                 [displayWith]="displayWithFN"
                 [compareWith]="compareWithFN"
                 (closed)="onSearchChanged('')"
-                (selectionChanged)="onSelectionChanged($event)"
                 (searchChanged)="onSearchChanged($event)">
         <app-option *ngFor="let user of filteredUsers"
                     [value]="user">{{ user.name }}</app-option>
