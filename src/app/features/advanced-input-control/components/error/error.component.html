@@ -1,0 +1,10 @@
+
+@if (control) {
+    @for (error of (control.errors| keyvalue); track $index) {
+        @if (control.touched) {
+            <span class="text-[75%] -mt-4 text-red-500 input-error-animation">
+                {{ errorMessages[error.key] }}
+            </span>
+        }
+    }
+}

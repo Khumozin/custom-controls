@@ -3,34 +3,23 @@ import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
-  Directive,
   ElementRef,
+  forwardRef,
   HostBinding,
   Input,
-  TemplateRef,
   ViewChild,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
-import { Appearance, InputDirective } from '../../directives';
+import {
+  Appearance,
+  ControlValueAccessorDirective,
+  InputDirective,
+  PrefixIconDirective,
+  SuffixIconDirective,
+} from '../../directives';
 
-type InputType = 'text' | 'password';
-
-@Directive({
-  selector: '[appPrefixIcon]',
-  standalone: true,
-})
-export class PrefixIconDirective {
-  constructor(public template: TemplateRef<unknown>) {}
-}
-
-@Directive({
-  selector: '[appSuffixIcon]',
-  standalone: true,
-})
-export class SuffixIconDirective {
-  constructor(public template: TemplateRef<unknown>) {}
-}
+type InputType = 'text' | 'password' | 'number';
 
 @Component({
   selector: 'app-input',
@@ -49,13 +38,13 @@ export class SuffixIconDirective {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: InputComponent,
+      useExisting: forwardRef(() => InputComponent),
       multi: true,
     },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InputComponent<T> {
+export class InputComponent<T> extends ControlValueAccessorDirective<T> {
   static nextId = 0;
 
   @Input()
@@ -70,9 +59,6 @@ export class InputComponent<T> {
   @Input()
   label = '';
 
-  @Input()
-  value: T | null = null;
-
   @HostBinding()
   protected id = `input-id-${InputComponent.nextId++}`;
 
@@ -84,11 +70,15 @@ export class InputComponent<T> {
   protected isFocused = false;
 
   onClick() {
+    if (this.isFocused) return;
+
     this.inputEl.nativeElement.focus();
     this.isFocused = true;
   }
 
   onBlur() {
+    if (!this.isFocused) return;
+
     this.isFocused = false;
   }
 }

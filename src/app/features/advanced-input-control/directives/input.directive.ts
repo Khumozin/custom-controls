@@ -22,7 +22,7 @@ export class InputDirective implements OnInit {
       cssClasses = [
         // 'px-2',
         // 'my-4',
-        'border-b-[1px]',
+        // 'border-b-[1px]',
         'border-gray-600',
         'focus:border-b-2',
       ];
