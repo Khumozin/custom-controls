@@ -7,8 +7,13 @@ export const routes: Routes = [
       import('./features').then((c) => c.AdvancedSearchControlComponent),
   },
   {
-    path: '',
+    path: 'select-control',
     loadComponent: () =>
       import('./features').then((c) => c.AdvancedSelectControlComponent),
+  },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./features').then((c) => c.AdvancedInputControlComponent),
   },
 ];
