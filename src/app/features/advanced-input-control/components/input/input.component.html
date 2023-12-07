@@ -4,7 +4,11 @@
            [for]="id">{{ label }}</label>
 
     <div appInput
-         [ngClass]="{'outline-none ring-[#9E8A33] border-[#9E8A33]': isFocused, 'border-b-2': isFocused && appearance === 'standard'}"
+         [ngClass]="{
+            'border-b-[1px]': !isFocused && appearance === 'standard',
+            'outline-none ring-[#9E8A33] border-[#9E8A33]': isFocused && appearance === 'outline',
+            'border-b-[#9E8A33] border-b-2': isFocused && appearance === 'standard',
+            'border-red-500': control.touched && control.invalid}"
          [appearance]="appearance"
          (click)="onClick()">
         <!-- prefix icon -->
@@ -20,7 +24,7 @@
                [ngClass]="{'rounded-md': appearance === 'outline'}"
                [id]="id"
                [type]="type"
-               [value]="value"
+               [formControl]="control"
                (blur)="onBlur()">
 
         <!-- suffix icons -->
@@ -30,5 +34,7 @@
         </div>
     </div>
 
-    <div class="m-1"><ng-content select="[error]"></ng-content></div>
+    <div class="m-1">
+        <ng-content select="[error]"></ng-content>
+    </div>
 </div>

@@ -1,0 +1,15 @@
+@keyframes error-message-animation {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+.input-error-animation {
+    animation-name: error-message-animation;
+    animation-duration: 300ms;
+}
